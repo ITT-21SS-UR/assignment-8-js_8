@@ -1,0 +1,33 @@
+1. What is the title of the paper?
+
+Avoiding Pitfalls  W hen Using  Machine Learning in HCI Studies
+
+2. What are some common use cases for machine learning in practical applications or research prototypes?
+
+- to model human behavior
+- develop novel user-interface techniques, such as to react to user input (e.g., gesture recognition), optimize system resources (e.g., smartphone battery conservation [1]), or provide intelligent mobile notifications [2].
+
+
+3. Which problems of machine learning do the authors of the paper identify? Explain one of them in detail.
+
+
+- Classification accuracy is not hypothesis testing
+- Causality versus correlation
+- Controlled versus non-controlled experiments. 
+
+
+4. What are the credentials of the authors with regard to machine learning? Have they published research on machine learning(or using machine-learning techniques) previously
+
+- We argue that in addition to accuracy, researchers should also report baseline performance.Consider a system that attempts to
+
+- Furthermore, especially in behavioral studies, it is important to note that the baseline is a function of both the possible outcomes and the relative likelihood of each
+
+- Finally, it is worth noting that accuracy is not sufficient to evaluate ML classification algorithms. 
+
+- For these reasons, we argue that a solid background in the basics of ML is necessary before adopting these tools in our research work and practice.
+
+- Finally, we also believe that qualitative methods must play a fundamental role in interpreting quantitative data obtained by means of quantitative methods such as the application of ML techniques.
+
+- Moreover, often ML techniques are applied to subsets of the data and, herefore, the resulting models capture only a limited part of the phenomena under observation.
+
+For Question "Have they published research on machine learning(or using machine-learning techniques) previously": Kostakos, V., Ferreira, D., Goncalves, J., and Hosio, S. Modelling smartphone usage: A Markov state transition model. Proc. of the 2016 International Joint Conference on Pervasive and Ubiquitous Computing. ACM, New York, 2016.
