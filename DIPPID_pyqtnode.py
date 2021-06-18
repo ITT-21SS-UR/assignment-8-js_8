@@ -8,8 +8,7 @@ import pyqtgraph.flowchart.library as fclib
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 import numpy as np
-
-from DIPPID import SensorUDP
+from DIPPID import SensorUDP, SensorSerial, SensorWiimote
 import sys
 
 
@@ -33,11 +32,9 @@ class BufferNode(Node):
         Node.__init__(self, name, terminals=terminals)
 
     def process(self, **kwds):
-        self._buffer = np.append(
-            self._buffer, kwds['dataIn'])[-self.buffer_size:]
+        self._buffer = np.append(self._buffer, kwds['dataIn'])[-self.buffer_size:]
 
         return {'dataOut': self._buffer}
-
 
 fclib.registerNodeType(BufferNode, [('Data',)])
 
@@ -77,7 +74,7 @@ class DIPPIDNode(Node):
         self.ui = QtGui.QWidget()
         self.layout = QtGui.QGridLayout()
 
-        label = QtGui.QLabel("Port:")
+        label = QtGui.QLabel("Port, BTADDR or TTY:")
         self.layout.addWidget(label)
 
         self.text = QtGui.QLineEdit()
@@ -123,8 +120,18 @@ class DIPPIDNode(Node):
         if self.connect_button.text() != "connect" and self.connect_button.text() != "try again":
             return
 
+        address = self.text.text().strip()
         self.connect_button.setText("connecting...")
-        self.dippid = SensorUDP(int(self.text.text().strip()))
+
+        if '/dev/tty' in address: # serial tty
+            self.dippid = SensorSerial(address)
+        elif ':' in address:
+            self.dippid = SensorWiimote(address)
+        elif address.isnumeric():
+            self.dippid = SensorUDP(int(address))
+        else:
+            print(f'invalid address: {address}')
+            print('allowed types: UDP port, bluetooth address, path to /dev/tty*')
 
         if self.dippid is None:
             self.connect_button.setText("try again")
@@ -143,11 +150,10 @@ class DIPPIDNode(Node):
         if rate == 0:
             self.update_timer.stop()
         else:
-            self.update_timer.start(1000 / rate)
+            self.update_timer.start(int(1000 / rate))
 
     def process(self, **kwdargs):
         return {'accelX': np.array([self._acc_vals[0]]), 'accelY': np.array([self._acc_vals[1]]), 'accelZ': np.array([self._acc_vals[2]])}
-
 
 fclib.registerNodeType(DIPPIDNode, [('Sensor',)])
 

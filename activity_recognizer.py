@@ -8,6 +8,7 @@ from PyQt5 import uic
 from pyqtgraph.flowchart import Flowchart, Node
 from pyqtgraph.flowchart.library.common import CtrlNode
 from pyqtgraph.Qt import QtGui, QtCore
+from pyqtgraph.Qt import QtWidgets
 from sklearn import svm
 from sklearn.exceptions import NotFittedError
 from scipy import signal
@@ -22,21 +23,58 @@ class ModusNode(Enum):
     PREDICTION = 2
     INACTIVE = 3
     
-class GestureNode(Node):
+class GestureNode(Node, QtWidgets.QWidget):
     nodeName = "ActivityRecognition"
+    saved_gestures = {}
 
     def __init__(self, name):
         self.__state = ModusNode.INACTIVE
         self.__is_recording = False
+        self.classifier = svm.SVC(kernel='linear') # TODO correct one?
 
-        self.__sensor = SensorUDP()
-        self.__sensor.register_callback('button_1', self.handle_button_press)
+        # TODO init ui for add new gesture
+        # TODO init ui for start recording
+        # TODO init ui for managing gestures (e.g. delete, retrain)
+        self.setup_ui()
 
         terminals = {
             'in': dict(io='in'), # TODO
             'out': dict(io='out')
         }
         Node.__init__(self, name, terminals=terminals)
+
+    def setup_ui(self):
+        self.ui = QtGui.QWidget()
+        self.layout = QtGui.QGridLayout()
+        #self.layout = QtWidgets.QVBoxLayout
+
+        # Add new node
+        label = QtGui.QLabel("Gesture Name:")
+        self.layout.addWidget(label)
+        self.text = QtGui.QLineEdit()
+        self.action = "Walking"
+        self.text.setText(self.action)
+        self.layout.addWidget(self.text)
+        # TODO buttons for add, delete, modify, retrain, ....
+
+        # set mode
+        label_modus = QtGui.QLabel("Select modus:")
+        self.layout.addWidget(label_modus)
+        self.inactive_btn = QtWidgets.QRadioButton("Inactive")
+        self.layout.addWidget(self.inactive_btn)
+
+        self.training_btn = QtWidgets.QRadioButton("Training")
+        self.training_btn.clicked.connect(self.handle_training)
+        self.layout.addWidget(self.training_btn)
+
+        self.prediction_btn = QtWidgets.QRadioButton("Prediction")
+        self.prediction_btn.clicked.connect(self.handle_prediction)
+        self.layout.addWidget(self.prediction_btn)
+        
+        self.ui.setLayout(self.layout)
+
+    def ctrlWidget(self):
+        return self.ui
 
     def set_recording(self, value):
         self.__is_recording == value
@@ -48,20 +86,17 @@ class GestureNode(Node):
         if self.__state == ModusNode.PREDICTION:
             self.generate_prediction(kwds)
 
-    def train_model(kwds):
+    def handle_prediction(self):
+        print("predict")
+
+    def handle_training(self):
+        print("training started")
+
+    def train_model(kwds):  # TODO
         pass
 
-    def generate_prediction(kwds):
+    def generate_prediction(kwds):  # TODO
         pass
-
-    def handle_button_press(self, data):
-        if int(data) == 0:
-            self.activity_node.set_recording(True)
-            print("button 1 pressed")
-        else:
-            self.activity_node.set_recording(False)
-        print("button 1 released")
-
 
 fclib.registerNodeType(GestureNode, [('Data', )])
 
@@ -84,6 +119,7 @@ class FeatureExtractionNode(Node):
         calc_z = np.fft.fft(kwds["in_z"])
         print("x: " + calc_x + ", " + "y: " + calc_y + ", " + "z: " + calc_z)
         return (calc_x, calc_y, calc_z)
+        # TODO spectogramm
 
 fclib.registerNodeType(FeatureExtractionNode, [('Data', )])
 
@@ -110,6 +146,8 @@ def createAndConnectNodes(chart):
         buffer_node_accel_z['dataOut'], feature_extract_node['in_z'])
 
     # TODO connect feature_extract_node['out']
+    chart.connectTerminals(
+        feature_extract_node['out'], activity_node['in'])
 
 def setupWindow():
     win = QtGui.QMainWindow()
@@ -137,8 +175,8 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         sys.stdout.write("Please specify port")
 
-    port_num = sys.argv[1]
-    print(port_num)
+    port = int(sys.argv[1])
+    print(port)
 
     app = QtGui.QApplication([])
     
