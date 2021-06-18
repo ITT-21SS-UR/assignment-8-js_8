@@ -90,6 +90,7 @@ class GestureNode(Node, QtWidgets.QWidget):
         print("predict")
 
     def handle_training(self):
+        self.setup_training_ui()
         print("training started")
 
     def train_model(kwds):  # TODO
