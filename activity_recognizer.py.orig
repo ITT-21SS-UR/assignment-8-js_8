@@ -32,6 +32,9 @@ class GestureNode(Node, QtWidgets.QWidget):
         self.__is_recording = False
         self.classifier = svm.SVC(kernel='linear') # TODO correct one?
 
+        # TODO init ui for add new gesture
+        # TODO init ui for start recording
+        # TODO init ui for managing gestures (e.g. delete, retrain)
         self.setup_ui()
 
         terminals = {
@@ -43,7 +46,19 @@ class GestureNode(Node, QtWidgets.QWidget):
     def setup_ui(self):
         self.ui = QtGui.QWidget()
         self.layout = QtGui.QGridLayout()
+<<<<<<< HEAD
         #self.layout = QtWidgets.QVBoxLayout
+
+        # Add new node
+        label = QtGui.QLabel("Gesture Name:")
+        self.layout.addWidget(label)
+        self.text = QtGui.QLineEdit()
+        self.action = "Walking"
+        self.text.setText(self.action)
+        self.layout.addWidget(self.text)
+        # TODO buttons for add, delete, modify, retrain, ....
+=======
+>>>>>>> 580c628 (Init GUI for gesture node.)
 
         # set mode
         label_modus = QtGui.QLabel("Select modus:")
@@ -58,69 +73,68 @@ class GestureNode(Node, QtWidgets.QWidget):
         self.prediction_btn = QtWidgets.QRadioButton("Prediction")
         self.prediction_btn.clicked.connect(self.handle_prediction)
         self.layout.addWidget(self.prediction_btn)
-
-        self.setup_manage_gestures_ui()
-        # self.setup_training_ui()
-        # self.setup_prediction_ui()
         
+<<<<<<< HEAD
         self.ui.setLayout(self.layout)
 
-    def setup_manage_gestures_ui(self):
-        label_new_gesture = QtGui.QLabel("Create new gesture")
-        self.layout.addWidget(label_new_gesture)
-        self.text = QtGui.QLineEdit()
-        self.layout.addWidget(self.text)
+=======
+        # self.setup_gesture_managment_ui()
+        # self.setup_training_ui()
+        self.setup_prediction_ui()
+        self.ui.setLayout(self.layout)
+
+    def setup_gesture_managment_ui(self):
+        label_add_gesture = QtGui.QLabel("New Gesture")
+        self.layout.addWidget(label_add_gesture)
+        self.new_node = QtGui.QLineEdit()
+        self.layout.addWidget(self.new_node)
         self.add_btn = QtWidgets.QPushButton("Add")
-        #self.add_btn.clicked.connect(self.add_gesture)
         self.layout.addWidget(self.add_btn)
 
-        label_manage = QtGui.QLabel("Manage Gestures")
-        self.layout.addWidget(label_manage)
+        label_manage_nodes = QtGui.QLabel("Manage gesture nodes")
+        self.layout.addWidget(label_manage_nodes)
 
-        self.selection = QtWidgets.QComboBox()
-        self.selection.addItems(["Walking", "Sitting", "Jumping"])
-        #self.selection.currentIndexChanged.connect(self.selectionchange)
-        self.layout.addWidget(self.selection)
+        self.drop_down = QtGui.QComboBox()
+        # TODO not hard coded
+        self.drop_down.addItems(["Walking", "Sitting", "Jumping"])
+        self.layout.addWidget(self.drop_down)
+
 
         self.del_btn = QtWidgets.QPushButton("Delete")
-        #self.del_btn.clicked.connect(self.delete_gesture)
         self.layout.addWidget(self.del_btn)
 
         self.retrain_btn = QtWidgets.QPushButton("Retrain")
-        #self.retrain_btn.clicked.connect(self.delete_training_data)
         self.layout.addWidget(self.retrain_btn)
-    
-    
+
     def setup_training_ui(self):
         label_training = QtGui.QLabel("Training")
         self.layout.addWidget(label_training)
 
-        self.selection = QtWidgets.QComboBox()
-        self.selection.addItems(["Walking", "Sitting", "Jumping"])
-        #self.selection.currentIndexChanged.connect(self.selectionchange)
-        self.layout.addWidget(self.selection)
+        label_select = QtGui.QLabel("Select Gesture")
+        self.layout.addWidget(label_select)
+
+        self.drop_down = QtGui.QComboBox()
+        # TODO not hard coded
+        self.drop_down.addItems(["Walking", "Sitting", "Jumping"])
+        self.layout.addWidget(self.drop_down)
 
         self.start_btn = QtWidgets.QPushButton("Start")
-        #self.start_btn.clicked.connect(self.start_training)
         self.layout.addWidget(self.start_btn)
-
         self.stop_btn = QtWidgets.QPushButton("Stop")
-        #self.stop_btn.clicked.connect(self.stop_training)
         self.layout.addWidget(self.stop_btn)
 
     def setup_prediction_ui(self):
         label_prediction = QtGui.QLabel("Prediction")
         self.layout.addWidget(label_prediction)
-
         self.start_btn = QtWidgets.QPushButton("Start")
-        #self.start_btn.clicked.connect(self.start_prediction)
         self.layout.addWidget(self.start_btn)
 
+        # && because one is for a shortcut
         self.predict_btn = QtWidgets.QPushButton("Stop && Predict")
-        #self.predict_btn.clicked.connect(self.handle_prediction)
         self.layout.addWidget(self.predict_btn)
 
     
+>>>>>>> 580c628 (Init GUI for gesture node.)
     def ctrlWidget(self):
         return self.ui
 
@@ -136,6 +150,14 @@ class GestureNode(Node, QtWidgets.QWidget):
 
     def handle_prediction(self):
         print("predict")
+<<<<<<< HEAD
+
+    def handle_training(self):
+        print("training started")
+
+    def train_model(kwds):  # TODO
+        pass
+=======
 
     def handle_training(self):
         self.setup_training_ui()
@@ -143,6 +165,11 @@ class GestureNode(Node, QtWidgets.QWidget):
 
     def train_model(kwds):  # TODO
         pass
+
+    def generate_prediction(kwds):  # TODO
+        pass
+
+>>>>>>> 580c628 (Init GUI for gesture node.)
 
     def generate_prediction(kwds):  # TODO
         pass
