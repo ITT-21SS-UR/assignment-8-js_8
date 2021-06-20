@@ -137,7 +137,7 @@ class SensorSerial(Sensor):
         self._connect()
 
     def _connect(self):
-        from DIPPID_MAIN import serial
+        import serial
 
         self._serial = serial.Serial(self._tty)
         self._serial.baudrate = self._baudrate
@@ -169,7 +169,7 @@ class SensorWiimote(Sensor):
         self._connect()
 
     def _connect(self):
-        from DIPPID_MAIN import wiimote
+        import wiimote
 
         self._wiimote = wiimote.connect(self._btaddr)
         self._connection_thread = Thread(target=self._receive)
