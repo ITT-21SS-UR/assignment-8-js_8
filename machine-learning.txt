@@ -41,8 +41,7 @@ In interpreting their results, researchers must pay immense attention to how ide
 
 - Moreover, often ML techniques are applied to subsets of the data and, herefore, the resulting models capture only a limited part of the phenomena under observation.
 
-Yes, they have published previously research (authors: Vassilis Kostakos & Mirco Musolesi). 
-The following is a list of some examples:
+Yes, they have published previously research (authors: Vassilis Kostakos & Mirco Musolesi). The following is a list of some examples:
 
     - Kostakos, V., Ferreira, D., Goncalves, J., and Hosio, S. Modelling smartphone usage: A Markov state transition model. Proc. of the 2016 International Joint Conference on Pervasive and Ubiquitous Computing. ACM, New York, 2016.
 
