@@ -9,33 +9,30 @@ from pyqtgraph.flowchart import Flowchart, Node
 from pyqtgraph.flowchart.library.common import CtrlNode
 from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph.Qt import QtWidgets
-from sklearn import svm
-from sklearn.exceptions import NotFittedError
-from scipy import signal
 
 from DIPPID import SensorUDP, SensorSerial, SensorWiimote
 from DIPPID_pyqtnode import BufferNode, DIPPIDNode
 
 from svm_node import SVMNode
-
+from gesture_node_widget import ManageGestureNodes
 from node_constants import NodeType, NodeDataType
 
 class FeatureExtractionNode(Node):
-    nodeName = "FeatureExtraction"
+    nodeName = NodeType.FEATURE_EXTRACTION_NODE.value
 
     def __init__(self, name):
         terminals = {
-            'in_x': dict(io='in'),
-            'in_y': dict(io='in'),
-            'in_z': dict(io='in'),
-            'out': dict(io='out')
+            NodeDataType.ACCEL_X.value: dict(io='in'),
+            NodeDataType.ACCEL_Y.value: dict(io='in'),
+            NodeDataType.ACCEL_Z.value: dict(io='in'),
+            NodeDataType.DATA_OUT.value: dict(io='out')
         }
         Node.__init__(self, name, terminals=terminals)
 
     def process(self, **kwds):
-        calc_x = np.fft.fft(kwds["in_x"])
-        calc_y = np.fft.fft(kwds["in_y"])
-        calc_z = np.fft.fft(kwds["in_z"])
+        calc_x = np.fft.fft(kwds[NodeDataType.ACCEL_X.value])
+        calc_y = np.fft.fft(kwds[NodeDataType.ACCEL_Y.value])
+        calc_z = np.fft.fft(kwds[NodeDataType.ACCEL_Z.value])
         #print("x: " + calc_x + ", " + "y: " + calc_y + ", " + "z: " + calc_z)
         #return (calc_x, calc_y, calc_z)
         # TODO spectogramm
@@ -44,19 +41,21 @@ class FeatureExtractionNode(Node):
 fclib.registerNodeType(FeatureExtractionNode, [('Data', )])
 
 class GestureNode(Node):
-    nodeName = "GestureNode"
+    nodeName = NodeType.GESTURE_NODE.value
 
     def __init__(self, name):
         terminals = {
-            'in_x': dict(io='in'),
-            'in_y': dict(io='in'),
-            'in_z': dict(io='in'),
-            'out': dict(io='out')
+            NodeDataType.ACCEL_X.value: dict(io='in'),
+            NodeDataType.ACCEL_Y.value: dict(io='in'),
+            NodeDataType.ACCEL_Z.value: dict(io='in'),
+            'out_x': dict(io='out_x'),
+            'out_y': dict(io='out_y'),
+            'out_z': dict(io='out_z')
         }
         Node.__init__(self, name, terminals=terminals)
-
+    
     def process(self, **kwds):
-        pass
+        return 'out_x'
 
 fclib.registerNodeType(GestureNode, [('Data', )])
 
@@ -86,17 +85,24 @@ class MainWindow(QtGui.QMainWindow):
 
         self.chart = Flowchart(terminals={'out': dict(io='out')})
         
-        self.dippid_node = self.chart.createNode("DIPPID", pos=(0, 0))
-        self.buffer_node_accel_x = self.chart.createNode("Buffer", pos=(100, -200))
-        self.buffer_node_accel_y = self.chart.createNode("Buffer", pos=(130, -100))
-        self.buffer_node_accel_z = self.chart.createNode("Buffer", pos=(100, 200))
-        self.feature_extract_node = self.chart.createNode("FeatureExtraction", pos=(130, 100))
+        self.dippid_node = self.chart.createNode(NodeType.DIPPID.value, pos=(0, 0))
+        self.buffer_node_accel_x = self.chart.createNode(NodeType.BUFFER.value, pos=(100, -200))
+        self.buffer_node_accel_y = self.chart.createNode(NodeType.BUFFER.value, pos=(130, -100))
+        self.buffer_node_accel_z = self.chart.createNode(NodeType.BUFFER.value, pos=(100, 200))
+        self.feature_extract_node = self.chart.createNode(NodeType.FEATURE_EXTRACTION_NODE.value, pos=(130, 100))
         self.svm_node = self.chart.createNode(SVMNode.nodeName, pos=(150, 0))
+        #self.gesture_node = self.chart.createNode(NodeType.GESTURE_NODE.value, pos=(200, 0))
+
+
+        self.management_node = self.chart.createNode("ManageGestures", pos=(10, 0))
 
         self.setupWindow()
+        #self.__gesture_node_widget = GestureNodeGUI()
+        #self.svm_node.gesture_added.connect(self.add_new_nodes)
+        #self.__gesture_node_widget.gesture_added.connect(self.add_new_nodes)
+        self.management_node.gesture_added.connect(self.add_new_nodes)
 
-        # TODO
-        # SVMNode.gesture_added.connect(self.add_new_nodes)
+        
 
     def connect_nodes(self):
         # connect nodes
@@ -107,11 +113,11 @@ class MainWindow(QtGui.QMainWindow):
         self.chart.connectTerminals(
             self.dippid_node['accelZ'], self.buffer_node_accel_z['dataIn'])
         self.chart.connectTerminals(
-            self.buffer_node_accel_x['dataOut'], self.feature_extract_node['in_x'])
+            self.buffer_node_accel_x['dataOut'], self.feature_extract_node[NodeDataType.ACCEL_X.value])
         self.chart.connectTerminals(
-            self.buffer_node_accel_y['dataOut'], self.feature_extract_node['in_y'])
+            self.buffer_node_accel_y['dataOut'], self.feature_extract_node[NodeDataType.ACCEL_Y.value])
         self.chart.connectTerminals(
-            self.buffer_node_accel_z['dataOut'], self.feature_extract_node['in_z'])
+            self.buffer_node_accel_z['dataOut'], self.feature_extract_node[NodeDataType.ACCEL_Z.value])
 
         # TODO connect feature_extract_node['out']
         #chart.connectTerminals(
@@ -119,18 +125,12 @@ class MainWindow(QtGui.QMainWindow):
 
     def add_new_nodes(self):
         print("New node")
-        node_list = SVMNode.saved_gestures
-        for i in range(0, len(node_list)):
-            gesture_node = self.chart.createNode("GestureNode", pos=(0, 0))
-            gesture_node.nodeName = node_list[i]
+        # TODO nodeName == Texteingabe
+        new_node = self.chart.createNode("GestureNode", pos=(0, 0))
+        new_node.nodeName = "Test"
 
-            #self.chart.connectTerminals(
-            #gesture_node['accel_x'], feature_extract_node['in_x'])
-            #self.chart.connectTerminals(
-            #gesture_node['accel_y'], feature_extract_node['in_y'])
-            #self.chart.connectTerminals(
-            #gesture_node['accel_z'], feature_extract_node['in_z'])
-
+        # TODO connection
+        self.chart.update()
 
     def setupWindow(self):
         self.setWindowTitle('Assignment 8')
@@ -139,13 +139,10 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(central_widget)
         layout = QtGui.QGridLayout()
         central_widget.setLayout(layout)
-
         
         layout.addWidget(self.chart.widget(), 0, 0, 2, 1)
         
         self.connect_nodes()
-        #SVMNode.gesture_added.connect(self.add_new_nodes)
-
 
 
 if __name__ == '__main__':

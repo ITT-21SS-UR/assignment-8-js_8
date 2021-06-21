@@ -19,8 +19,6 @@ class ModusNode(Enum):
 class SVMNode(Node, QtWidgets.QWidget):
     nodeName = NodeType.SVM_NODE.value
     saved_gestures = []
-    gesture_added = pyqtSignal(str)
-    gesture_deleted = pyqtSignal()
 
     def __init__(self, name):
         
@@ -36,8 +34,6 @@ class SVMNode(Node, QtWidgets.QWidget):
         }
         Node.__init__(self, name, terminals=terminals)
 
-    def test():
-        print("Test")
 
     def setup_ui(self):
         self.ui = QtGui.QWidget()
@@ -59,39 +55,10 @@ class SVMNode(Node, QtWidgets.QWidget):
         #self.prediction_btn.clicked.connect(self.handle_prediction_state)
         self.__layout.addWidget(self.prediction_btn)
 
-        self.setup_manage_gestures_ui()
         #self.setup_training_ui()
         #self.setup_prediction_ui()
         
         self.ui.setLayout(self.__layout)
-
-
-    def setup_manage_gestures_ui(self):
-        label_new_gesture = QtGui.QLabel("Create new gesture")
-        self.__layout.addWidget(label_new_gesture)
-        self.__gesture_name = QtGui.QLineEdit()
-        self.__layout.addWidget(self.__gesture_name)
-
-        self.add_btn = QtWidgets.QPushButton("Add")
-        self.add_btn.clicked.connect(self.add_gesture)
-        self.__layout.addWidget(self.add_btn)
-
-        label_manage = QtGui.QLabel("Manage Gestures")
-        self.__layout.addWidget(label_manage)
-
-        self.selection_box = QtWidgets.QComboBox()
-        self.selection_box.addItems(self.saved_gestures)
-        #self.selection.currentIndexChanged.connect(self.selectionchange)
-        self.__layout.addWidget(self.selection_box)
-
-        self.del_btn = QtWidgets.QPushButton("Delete")
-        #self.del_btn.clicked.connect(self.delete_gesture)
-        self.__layout.addWidget(self.del_btn)
-
-        self.retrain_btn = QtWidgets.QPushButton("Retrain")
-        #self.retrain_btn.clicked.connect(self.delete_training_data)
-        self.__layout.addWidget(self.retrain_btn)
-
 
     def setup_training_ui(self):
         label_training = QtGui.QLabel("Training")
@@ -120,26 +87,6 @@ class SVMNode(Node, QtWidgets.QWidget):
         self.predict_btn = QtWidgets.QPushButton("Stop && Predict")
         #self.predict_btn.clicked.connect(self.handle_prediction)
         self.__layout.addWidget(self.predict_btn)
-
-    def add_gesture(self):
-        self.saved_gestures.append(self.__gesture_name.text())
-        self.__gesture_name.setText("")
-        self.clear_list()
-        self.selection_box.addItems(self.saved_gestures)
-
-        self.gesture_added.emit()
-        
-        print(self.saved_gestures)
-
-    def clear_list(self):
-        for i in range(0, len(self.saved_gestures)):
-            self.selection_box.removeItem(i)
-
-    def get_gesture_nodes(self):
-        return self.saved_gestures
-
-    def delete_gesture():
-        pass
 
     def delete_training_data():
         pass
