@@ -1,10 +1,10 @@
-1. What is the title of the paper?
+    1. What is the title of the paper?
 
 Title of the paper: 
 
     "Avoiding Pitfalls When Using Machine Learning in HCI Studies"
 
-2. What are some common use cases for machine learning in practical applications or research prototypes?
+    2. What are some common use cases for machine learning in practical applications or research prototypes?
 
 The modeling of human behavior is considered as a use case for the use of machine learning techniques. 
 Moreover, the optimization and development of new types of user interface technologies is another area of application. 
@@ -15,7 +15,7 @@ In addition, the topic of being able to predict how potential users will interac
 what activities will be carried out is an interesting research area. A milestone here is the development 
 of systems that should anticipate possible actions.
 
-3. Which problems of machine learning do the authors of the paper identify? Explain one of them in detail.
+    3. Which problems of machine learning do the authors of the paper identify? Explain one of them in detail.
 
 The author of the paper identify the following problems:
     
