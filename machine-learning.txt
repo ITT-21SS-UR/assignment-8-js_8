@@ -6,10 +6,14 @@ Title of the paper:
 
 2. What are some common use cases for machine learning in practical applications or research prototypes?
 
-The modeling of human behavior is considered as a use case for the use of machine learning techniques. Moreover, the optimization and development of new types of user interface technologies is another area of application. Machine learning can here contribute to a wide variety of research projects. For example, how to reduce the battery consumption of a smartphone, the intelligent provision of mobile notifications or gesture recognition.
+The modeling of human behavior is considered as a use case for the use of machine learning techniques. 
+Moreover, the optimization and development of new types of user interface technologies is another area of application. 
+Machine learning can here contribute to a wide variety of research projects. For example, how to reduce the battery consumption of a smartphone, 
+the intelligent provision of mobile notifications or gesture recognition.
 
-In addition, the topic of being able to predict how potential users will interact with the system or what activities will be carried out is an interesting research area. A milestone here is the development of systems that should anticipate possible actions.
-
+In addition, the topic of being able to predict how potential users will interact with the system or 
+what activities will be carried out is an interesting research area. A milestone here is the development 
+of systems that should anticipate possible actions.
 
 3. Which problems of machine learning do the authors of the paper identify? Explain one of them in detail.
 
@@ -19,10 +23,11 @@ The author of the paper identify the following problems:
     - Causality versus correlation
     - Controlled versus non-controlled experiments. 
     
-The problem lies in the accuracy of a machine learning prediction, especially when it comes to analyzing human behavior. In this case, machine learning methods cannot replace proven methods such as hypothesis testing and correlation/cause analyzes. In interpreting their results, researchers must pay immense attention to how identified behavioral traits relate to users' actual emotions.
+The problem lies in the accuracy of a machine learning prediction, especially when it comes to analyzing human behavior. 
+In this case, machine learning methods cannot replace proven methods such as hypothesis testing and correlation/cause analyzes. 
+In interpreting their results, researchers must pay immense attention to how identified behavioral traits relate to users' actual emotions.
     
-    
-4. What are the credentials of the authors with regard to machine learning? Have they published research on machine learning(or using machine-learning techniques) previously
+    4. What are the credentials of the authors with regard to machine learning? Have they published research on machine learning(or using machine-learning techniques) previously
 
 - We argue that in addition to accuracy, researchers should also report baseline performance.Consider a system that attempts to
 
@@ -36,14 +41,14 @@ The problem lies in the accuracy of a machine learning prediction, especially wh
 
 - Moreover, often ML techniques are applied to subsets of the data and, herefore, the resulting models capture only a limited part of the phenomena under observation.
 
+Yes, they have published previously research (authors: Vassilis Kostakos & Mirco Musolesi). 
+The following is a list of some examples:
 
-Previous research (Authors: Vassilis Kostakos & Mirco Musolesi): 
+    - Kostakos, V., Ferreira, D., Goncalves, J., and Hosio, S. Modelling smartphone usage: A Markov state transition model. Proc. of the 2016 International Joint Conference on Pervasive and Ubiquitous Computing. ACM, New York, 2016.
 
-Kostakos, V., Ferreira, D., Goncalves, J., and Hosio, S. Modelling smartphone usage: A Markov state transition model. Proc. of the 2016 International Joint Conference on Pervasive and Ubiquitous Computing. ACM, New York, 2016.
+    - Mehrotra, A., Musolesi, M., Hendley, R., and Pejovic, V. Designing content-driven intelligent notification mechanism for mobile applications. Proc. of the 2016 International Joint Conference on Pervasive and Ubiquitous Computing. ACM, New York, 2015.
 
-Mehrotra, A., Musolesi, M., Hendley, R., and Pejovic, V. Designing content-driven intelligent notification mechanism for mobile applications. Proc. of the 2016 International Joint Conference on Pervasive and Ubiquitous Computing. ACM, New York, 2015.
-
-Pejovic, V. and Musolesi, M. Anticipatory mobile computing: A survey of the state of the art and research challenges. ACM Computing Surveys 47, 3 (Apr. 2015).
+    - Pejovic, V. and Musolesi, M. Anticipatory mobile computing: A survey of the state of the art and research challenges. ACM Computing Surveys 47, 3 (Apr. 2015).
 
 Source for this Assignment: 
 
