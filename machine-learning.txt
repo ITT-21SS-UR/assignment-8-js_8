@@ -29,9 +29,14 @@ In interpreting their results, researchers must pay immense attention to how ide
     
     4. What are the credentials of the authors with regard to machine learning? Have they published research on machine learning(or using machine-learning techniques) previously
     
-Vassillis Kostakos (PhD) is Professor at the University of Melbourne for human computer interaction. He is one of the pioneering editors of publications of the ACM and was even able to win the 2014 "SIGCHI Best Talk Award". His research is mainly concerned with mobile technologies for smartphones, user-oriented design of systems and machine learning. 
+Vassillis Kostakos (PhD) is Professor at the University of Melbourne for human computer interaction. 
+He is one of the pioneering editors of publications of the ACM and was even able to win the 2014 "SIGCHI Best Talk Award". 
+His research is mainly concerned with mobile technologies for smartphones, user-oriented design of systems and machine learning. 
 
-Mirco Musolesi is a Professor of Computer Science at the University College in London and the University of Bologna. He is also a researcher at the Alan Turing Institute (National Institute for Data Science and Artificial Intelligence based in the UK). In his research, he primarily deals with machine learning and artificial intelligence, but also with computer models that depict human behavior.
+Mirco Musolesi is a Professor of Computer Science at the University College in London and the University of Bologna. 
+He is also a researcher at the Alan Turing Institute (National Institute for Data Science and 
+Artificial Intelligence based in the UK). In his research, he primarily deals with machine learning and artificial intelligence, 
+but also with computer models that depict human behavior.
 
 Yes, they have published previously research (authors: Vassilis Kostakos & Mirco Musolesi). The following is a list of some examples:
 
