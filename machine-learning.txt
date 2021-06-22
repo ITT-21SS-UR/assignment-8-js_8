@@ -28,18 +28,10 @@ In this case, machine learning methods cannot replace proven methods such as hyp
 In interpreting their results, researchers must pay immense attention to how identified behavioral traits relate to users' actual emotions.
     
     4. What are the credentials of the authors with regard to machine learning? Have they published research on machine learning(or using machine-learning techniques) previously
+    
+Vassillis Kostakos (PhD) is Professor at the University of Melbourne for human computer interaction. He is one of the pioneering editors of publications of the ACM and was even able to win the 2014 "SIGCHI Best Talk Award". His research is mainly concerned with mobile technologies for smartphones, user-oriented design of systems and machine learning. 
 
-- We argue that in addition to accuracy, researchers should also report baseline performance.Consider a system that attempts to
-
-- Furthermore, especially in behavioral studies, it is important to note that the baseline is a function of both the possible outcomes and the relative likelihood of each
-
-- Finally, it is worth noting that accuracy is not sufficient to evaluate ML classification algorithms. 
-
-- For these reasons, we argue that a solid background in the basics of ML is necessary before adopting these tools in our research work and practice.
-
-- Finally, we also believe that qualitative methods must play a fundamental role in interpreting quantitative data obtained by means of quantitative methods such as the application of ML techniques.
-
-- Moreover, often ML techniques are applied to subsets of the data and, herefore, the resulting models capture only a limited part of the phenomena under observation.
+Mirco Musolesi is a Professor of Computer Science at the University College in London and the University of Bologna. He is also a researcher at the Alan Turing Institute (National Institute for Data Science and Artificial Intelligence based in the UK). In his research, he primarily deals with machine learning and artificial intelligence, but also with computer models that depict human behavior.
 
 Yes, they have published previously research (authors: Vassilis Kostakos & Mirco Musolesi). The following is a list of some examples:
 
@@ -48,7 +40,19 @@ Yes, they have published previously research (authors: Vassilis Kostakos & Mirco
     - Mehrotra, A., Musolesi, M., Hendley, R., and Pejovic, V. Designing content-driven intelligent notification mechanism for mobile applications. Proc. of the 2016 International Joint Conference on Pervasive and Ubiquitous Computing. ACM, New York, 2015.
 
     - Pejovic, V. and Musolesi, M. Anticipatory mobile computing: A survey of the state of the art and research challenges. ACM Computing Surveys 47, 3 (Apr. 2015).
+    
+For more information and a complete overview of previous and current publications:
+
+    - Vassilis Kostakos: https://people.eng.unimelb.edu.au/vkostakos/publications.php
+
+    - Mirco Musolesi: https://www.mircomusolesi.org/papers/
 
 Source for this Assignment: 
 
+Mirco Musolesi. (o. D.). Mirco Musolesi. Abgerufen am 22. Juni 2021, von https://www.mircomusolesi.org/
+
 Vassilis Kostakos and Mirco Musolesi. 2017. Avoiding pitfalls when using machine learning in HCI studies. interactions 24, 4 (July-August 2017), 34–37. DOI:https://doi.org/10.1145/3085556
+
+Vassilis Kostakos. (o. D.-a). Melbourne School of Population and Global Health. Abgerufen am 22. Juni 2021, von https://mspgh.unimelb.edu.au/digitalhealth-cre/people/chief-investigators/vassilis-kostakos
+
+Vassilis Kostakos. (o. D.-b). Find an Expert. Abgerufen am 22. Juni 2021, von https://findanexpert.unimelb.edu.au/profile/799877-vassilis-kostakos
