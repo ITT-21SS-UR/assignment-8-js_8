@@ -42,11 +42,15 @@ but also with computer models that depict human behavior [1].
 
 Yes, they have published previously research (authors: Vassilis Kostakos & Mirco Musolesi). The following is a list of some examples:
 
+    - Van Berkel, N., Goncalves, J., Hettiachchi, D., Wijenayake, S., Kelly, R. M., & Kostakos, V. (2019). Crowdsourcing perceptions of fair predictors for machine learning: A recidivism case study. Proceedings of the ACM on Human-Computer Interaction, 3(CSCW), 1-21.
+
     - Kostakos, V., Ferreira, D., Goncalves, J., and Hosio, S. Modelling smartphone usage: A Markov state transition model. Proc. of the 2016 International Joint Conference on Pervasive and Ubiquitous Computing. ACM, New York, 2016.
+    
+    - Lopez, M. B., Hadid, A., Boutellaa, E., Goncalves, J., Kostakos, V., & Hosio, S. (2018). Kinship verification from facial images and videos: human versus machine. Machine Vision and Applications, 29(5), 873-890.
 
     - Mehrotra, A., Musolesi, M., Hendley, R., and Pejovic, V. Designing content-driven intelligent notification mechanism for mobile applications. Proc. of the 2016 International Joint Conference on Pervasive and Ubiquitous Computing. ACM, New York, 2015.
 
-    - Pejovic, V. and Musolesi, M. Anticipatory mobile computing: A survey of the state of the art and research challenges. ACM Computing Surveys 47, 3 (Apr. 2015).
+    - Mehrotra, A., Hendley, R., & Musolesi, M. (2017). Interpretable machine learning for mobile notification management: An overview of prefminer. GetMobile: Mobile Computing and Communications, 21(2), 35-38.
     
 For more information and a complete overview of previous and current publications:
 
