@@ -12,16 +12,41 @@ from sklearn import svm
 import DIPPID_pyqtnode
 from enum import Enum
 
+
+'''
+Author: Sarah
+Reviewer: Jonas
+
+START PROGRAMM:
+- Connect the M5Stack with your computer.
+- Type "activity_recognizer.py [PORT]" in the consol.
+- Default Port is 5700.
+- In DIPPID Node click the button "connect".
+
+PROGRAMM:
+- In the SVM Node you can switch between the mode "Inactive", "Training" and "Prediction".
+- In the "Inactive" mode you can add new gesture categories via the line edit and the plus button.
+- Already existing categories can be selected and removed or its training data could be resetted via buttons.
+
+- In the "Training" mode you can select a added categorie and record training data for it.
+- In order to do so, click the button "Train", fulfill the gesture and click the button again to stop recording.
+
+- With selected prediction mode you can perform a gesture and you get a prediction, in which categorie the gesture fits.
+- For prediction at least two categories are needed.
+
+'''
+
+
 class FftNode(Node):
     nodeName = "Fft"
-    
+
     SAMPLE_SIZE = 64
 
     def __init__(self, name):
-        terminals = { "accelX": { "io": "in" },
-                      "accelY": { "io": "in" },
-                      "accelZ": { "io": "in" },
-                      "dspOut": { "io": "out" } }
+        terminals = {"accelX": {"io": "in"},
+                     "accelY": {"io": "in"},
+                     "accelZ": {"io": "in"},
+                     "dspOut": {"io": "out"}}
         super().__init__(name, terminals)
 
         self.clear()
@@ -38,13 +63,15 @@ class FftNode(Node):
 
         for i in range(len(x)):
             self.__avg.append((x[i] + y[i] + z[i]) / 3)
-        
+
         windowed = np.hamming(len(self.__avg)) * self.__avg
         freq = np.fft.fft(windowed, FftNode.SAMPLE_SIZE) / len(windowed)
         amplitude_spectrum = np.abs(freq)[1:len(freq) // 2]
-        return { "dspOut": amplitude_spectrum }
-        
+        return {"dspOut": amplitude_spectrum}
+
+
 fclib.registerNodeType(FftNode, [("DSP",)])
+
 
 class SvmNodeCtrl(QtGui.QWidget):
 
@@ -194,12 +221,12 @@ class SvmNodeCtrl(QtGui.QWidget):
         self.__delete_button.setEnabled(self.__cat_list.count() > 0)
 
         can_enable_reset_btn = self.__cat_list.count() > 0 \
-                                    and len(self.get_data()) > 0 \
-                                    and self.__mode == SvmNodeCtrl.SvmMode.Training
+            and len(self.get_data()) > 0 \
+            and self.__mode == SvmNodeCtrl.SvmMode.Training
         self.__reset_button.setEnabled(can_enable_reset_btn)
 
         can_enable_training_btn = self.__cat_list.count() > 0 \
-                                    and self.__mode == SvmNodeCtrl.SvmMode.Training
+            and self.__mode == SvmNodeCtrl.SvmMode.Training
         self.__train_button.setEnabled(can_enable_training_btn)
 
     def __on_train_clicked(self, checked):
@@ -219,13 +246,13 @@ class SvmNode(Node):
     nodeName = "SVM"
 
     def __init__(self, name):
-        terminals = { "dspIn": { "io": "in" },
-                      "categoryOut": { "io": "out" } }
+        terminals = {"dspIn": {"io": "in"},
+                     "categoryOut": {"io": "out"}}
         super().__init__(name, terminals)
 
         self.__buffer = []
         self.__classifier = svm.SVC()
-        
+
         self.ui = SvmNodeCtrl()
         self.ui.training_started.connect(self.__clear_buffer)
         self.ui.data_changed.connect(self.__process_training_data)
@@ -236,21 +263,21 @@ class SvmNode(Node):
 
     def process(self, **kargs):
         if self.ui.get_mode() == SvmNodeCtrl.SvmMode.Inactive:
-            return { "categoryOut": "** classifier inactive **" }
+            return {"categoryOut": "** classifier inactive **"}
 
         self.__buffer = kargs["dspIn"]
 
         if self.ui.get_mode() == SvmNodeCtrl.SvmMode.Training:
-            return { "categoryOut": "** training mode **" }
+            return {"categoryOut": "** training mode **"}
 
         if len(self.ui.get_categories()) < 2:
-            return { "categoryOut": "** you have to train at least 2 categories **"}
+            return {"categoryOut": "** you have to train at least 2 categories **"}
 
         try:
             category = self.__classifier.predict([self.__buffer])
-            return { "categoryOut": self.ui.get_category_name(category[0]) }
+            return {"categoryOut": self.ui.get_category_name(category[0])}
         except ValueError:
-            return { "categoryOut": "** need more training data **" }
+            return {"categoryOut": "** need more training data **"}
 
     def __process_training_data(self):
         self.ui.set_data(self.__buffer)
@@ -270,7 +297,7 @@ class SvmNode(Node):
         for i in range(len(categories)):
             category_name = self.ui.get_category_name(i)
             data = all_data[category_name]
-            
+
             for d in data:
                 training_set.append(d)
                 classifiers.append(i)
@@ -280,13 +307,15 @@ class SvmNode(Node):
         except ValueError:
             pass
 
+
 fclib.registerNodeType(SvmNode, [("Classifier",)])
+
 
 class TextDisplayNode(Node):
     nodeName = "TextDisplay"
 
     def __init__(self, name):
-        terminals = { "textIn": { "io": "in" } }
+        terminals = {"textIn": {"io": "in"}}
         super().__init__(name, terminals)
 
         self.__text = None
@@ -303,7 +332,9 @@ class TextDisplayNode(Node):
 
         return {}
 
+
 fclib.registerNodeType(TextDisplayNode, ("Display",))
+
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -346,6 +377,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__fc.connectTerminals(svm_node["categoryOut"], display["textIn"])
 
         svm_node.ctrlWidget().training_started.connect(lambda: dsp_node.clear())
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
