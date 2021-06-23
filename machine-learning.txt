@@ -2,7 +2,7 @@
 
 Title of the paper: 
 
-    "Avoiding Pitfalls When Using Machine Learning in HCI Studies"
+    "Avoiding Pitfalls When Using Machine Learning in HCI Studies" by Vassilis Kostakos and Mirco Musolesi [2].
 
     2. What are some common use cases for machine learning in practical applications or research prototypes?
 
@@ -17,11 +17,13 @@ of systems that should anticipate possible actions.
 
     3. Which problems of machine learning do the authors of the paper identify? Explain one of them in detail.
 
-The author of the paper identify the following problems:
-    
-    - Classification accuracy is not hypothesis testing
-    - Causality versus correlation
-    - Controlled versus non-controlled experiments. 
+The authors identified some of the following problems:
+
+    - Machine learning prediction accuracy can't replace hypothesis testing and correlation/cause analyzes.
+    - The results are difficult for researchers to interpret and therefore wrong conclusions can be drawn.
+    - The training set used requires particular care (Reporting about results of both models: personalized and generic).
+    - Machine learning results do not offer insights into causal relationships but rather show association relationships.
+    - Depending on the experiment (controlled vs. non-controlled ) it is important to use different techniques.
     
 The problem lies in the accuracy of a machine learning prediction, especially when it comes to analyzing human behavior. 
 In this case, machine learning methods cannot replace proven methods such as hypothesis testing and correlation/cause analyzes. 
@@ -31,12 +33,12 @@ In interpreting their results, researchers must pay immense attention to how ide
     
 Vassillis Kostakos (PhD) is Professor at the University of Melbourne for human computer interaction. 
 He is one of the pioneering editors of publications of the ACM and was even able to win the 2014 "SIGCHI Best Talk Award". 
-His research is mainly concerned with mobile technologies for smartphones, user-oriented design of systems and machine learning. 
+His research is mainly concerned with mobile technologies for smartphones, user-oriented design of systems and machine learning [3, 4]. 
 
 Mirco Musolesi is a Professor of Computer Science at the University College in London and the University of Bologna. 
 He is also a researcher at the Alan Turing Institute (National Institute for Data Science and 
 Artificial Intelligence based in the UK). In his research, he primarily deals with machine learning and artificial intelligence, 
-but also with computer models that depict human behavior.
+but also with computer models that depict human behavior [1].
 
 Yes, they have published previously research (authors: Vassilis Kostakos & Mirco Musolesi). The following is a list of some examples:
 
@@ -54,10 +56,10 @@ For more information and a complete overview of previous and current publication
 
 Source for this Assignment: 
 
-Mirco Musolesi. (o. D.). Mirco Musolesi. Abgerufen am 22. Juni 2021, von https://www.mircomusolesi.org/
+1. Mirco Musolesi. (o. D.). Mirco Musolesi. Abgerufen am 22. Juni 2021, von https://www.mircomusolesi.org/
 
-Vassilis Kostakos and Mirco Musolesi. 2017. Avoiding pitfalls when using machine learning in HCI studies. interactions 24, 4 (July-August 2017), 34–37. DOI:https://doi.org/10.1145/3085556
+2. Vassilis Kostakos and Mirco Musolesi. 2017. Avoiding pitfalls when using machine learning in HCI studies. interactions 24, 4 (July-August 2017), 34–37. DOI:https://doi.org/10.1145/3085556
 
-Vassilis Kostakos. (o. D.-a). Melbourne School of Population and Global Health. Abgerufen am 22. Juni 2021, von https://mspgh.unimelb.edu.au/digitalhealth-cre/people/chief-investigators/vassilis-kostakos
+3. Vassilis Kostakos. (o. D.-a). Melbourne School of Population and Global Health. Abgerufen am 22. Juni 2021, von https://mspgh.unimelb.edu.au/digitalhealth-cre/people/chief-investigators/vassilis-kostakos
 
-Vassilis Kostakos. (o. D.-b). Find an Expert. Abgerufen am 22. Juni 2021, von https://findanexpert.unimelb.edu.au/profile/799877-vassilis-kostakos
+4. Vassilis Kostakos. (o. D.-b). Find an Expert. Abgerufen am 22. Juni 2021, von https://findanexpert.unimelb.edu.au/profile/799877-vassilis-kostakos
