@@ -1,168 +1,357 @@
+#!/usr/bin/env python3
+# coding: utf-8
+# -*- coding: utf-8 -*-
+
+import sys
+from pyqtgraph.flowchart import Flowchart, Node
+import pyqtgraph.flowchart.library as fclib
+from pyqtgraph.Qt import QtGui, QtCore, QtWidgets
 import pyqtgraph as pg
 import numpy as np
-import sys
-import pyqtgraph.flowchart.library as fclib
-
+from sklearn import svm
+import DIPPID_pyqtnode
 from enum import Enum
-from PyQt5 import uic
-from pyqtgraph.flowchart import Flowchart, Node
-from pyqtgraph.flowchart.library.common import CtrlNode
-from pyqtgraph.Qt import QtGui, QtCore
-from pyqtgraph.Qt import QtWidgets
 
-from DIPPID import SensorUDP, SensorSerial, SensorWiimote
-from DIPPID_pyqtnode import BufferNode, DIPPIDNode
-
-from svm_node import SVMNode
-from gesture_node_widget import ManageGestureNodes
-from node_constants import NodeType, NodeDataType
-
-class FeatureExtractionNode(Node):
-    nodeName = NodeType.FEATURE_EXTRACTION_NODE.value
-
-    def __init__(self, name):
-        terminals = {
-            NodeDataType.ACCEL_X.value: dict(io='in'),
-            NodeDataType.ACCEL_Y.value: dict(io='in'),
-            NodeDataType.ACCEL_Z.value: dict(io='in'),
-            NodeDataType.DATA_OUT.value: dict(io='out')
-        }
-        Node.__init__(self, name, terminals=terminals)
-
-    def process(self, **kwds):
-        calc_x = np.fft.fft(kwds[NodeDataType.ACCEL_X.value])
-        calc_y = np.fft.fft(kwds[NodeDataType.ACCEL_Y.value])
-        calc_z = np.fft.fft(kwds[NodeDataType.ACCEL_Z.value])
-        #print("x: " + calc_x + ", " + "y: " + calc_y + ", " + "z: " + calc_z)
-        #return (calc_x, calc_y, calc_z)
-        # TODO spectogramm
-
-
-fclib.registerNodeType(FeatureExtractionNode, [('Data', )])
-
-class GestureNode(Node):
-    nodeName = NodeType.GESTURE_NODE.value
-
-    def __init__(self, name):
-        terminals = {
-            NodeDataType.ACCEL_X.value: dict(io='in'),
-            NodeDataType.ACCEL_Y.value: dict(io='in'),
-            NodeDataType.ACCEL_Z.value: dict(io='in'),
-            'out_x': dict(io='out_x'),
-            'out_y': dict(io='out_y'),
-            'out_z': dict(io='out_z')
-        }
-        Node.__init__(self, name, terminals=terminals)
+class FftNode(Node):
+    nodeName = "Fft"
     
-    def process(self, **kwds):
-        return 'out_x'
-
-fclib.registerNodeType(GestureNode, [('Data', )])
-
-
-class TextNode(Node):
-    nodeName = "Prediction"
+    SAMPLE_SIZE = 64
 
     def __init__(self, name):
-        terminals = {
-            'in_x': dict(io='in'),
-            'in_y': dict(io='in'),
-            'in_z': dict(io='in'),
-            'out': dict(io='out')
-        }
-        Node.__init__(self, name, terminals=terminals)
+        terminals = { "accelX": { "io": "in" },
+                      "accelY": { "io": "in" },
+                      "accelZ": { "io": "in" },
+                      "dspOut": { "io": "out" } }
+        super().__init__(name, terminals)
 
-    def process(self, **kwds):
-        pass
+        self.clear()
 
+    def clear(self):
+        self.__avg = []
 
-fclib.registerNodeType(TextNode, [('Data', )])
+    def process(self, **kargs):
+        x, y, z = kargs["accelX"], kargs["accelY"], kargs["accelZ"]
 
+        if len(self.__avg) > FftNode.SAMPLE_SIZE:
+            pos = len(self.__avg) - FftNode.SAMPLE_SIZE + len(x)
+            self.__avg = self.__avg[pos:]
 
-class MainWindow(QtGui.QMainWindow):
-    def __init__(self, port_number=None):
-        super(MainWindow, self).__init__()
-
-        self.chart = Flowchart(terminals={'out': dict(io='out')})
+        for i in range(len(x)):
+            self.__avg.append((x[i] + y[i] + z[i]) / 3)
         
-        self.dippid_node = self.chart.createNode(NodeType.DIPPID.value, pos=(0, 0))
-        self.buffer_node_accel_x = self.chart.createNode(NodeType.BUFFER.value, pos=(100, -200))
-        self.buffer_node_accel_y = self.chart.createNode(NodeType.BUFFER.value, pos=(130, -100))
-        self.buffer_node_accel_z = self.chart.createNode(NodeType.BUFFER.value, pos=(100, 200))
-        self.feature_extract_node = self.chart.createNode(NodeType.FEATURE_EXTRACTION_NODE.value, pos=(130, 100))
-        self.svm_node = self.chart.createNode(SVMNode.nodeName, pos=(150, 0))
-        #self.gesture_node = self.chart.createNode(NodeType.GESTURE_NODE.value, pos=(200, 0))
-
-
-        self.management_node = self.chart.createNode("ManageGestures", pos=(10, 0))
-
-        self.setupWindow()
-        #self.__gesture_node_widget = GestureNodeGUI()
-        #self.svm_node.gesture_added.connect(self.add_new_nodes)
-        #self.__gesture_node_widget.gesture_added.connect(self.add_new_nodes)
-        self.management_node.gesture_added.connect(self.add_new_nodes)
-
+        windowed = np.hamming(len(self.__avg)) * self.__avg
+        freq = np.fft.fft(windowed, FftNode.SAMPLE_SIZE) / len(windowed)
+        amplitude_spectrum = np.abs(freq)[1:len(freq) // 2]
+        return { "dspOut": amplitude_spectrum }
         
+fclib.registerNodeType(FftNode, [("DSP",)])
 
-    def connect_nodes(self):
-        # connect nodes
-        self.chart.connectTerminals(
-            self.dippid_node['accelX'], self.buffer_node_accel_x['dataIn'])
-        self.chart.connectTerminals(
-            self.dippid_node['accelY'], self.buffer_node_accel_y['dataIn'])
-        self.chart.connectTerminals(
-            self.dippid_node['accelZ'], self.buffer_node_accel_z['dataIn'])
-        self.chart.connectTerminals(
-            self.buffer_node_accel_x['dataOut'], self.feature_extract_node[NodeDataType.ACCEL_X.value])
-        self.chart.connectTerminals(
-            self.buffer_node_accel_y['dataOut'], self.feature_extract_node[NodeDataType.ACCEL_Y.value])
-        self.chart.connectTerminals(
-            self.buffer_node_accel_z['dataOut'], self.feature_extract_node[NodeDataType.ACCEL_Z.value])
+class SvmNodeCtrl(QtGui.QWidget):
 
-        # TODO connect feature_extract_node['out']
-        #chart.connectTerminals(
-            #feature_extract_node['out'], svm_node['in'])
+    class SvmMode(Enum):
+        Inactive = 1
+        Training = 2
+        Prediction = 3
 
-    def add_new_nodes(self):
-        print("New node")
-        # TODO nodeName == Texteingabe
-        new_node = self.chart.createNode("GestureNode", pos=(0, 0))
-        new_node.nodeName = "Test"
+    training_started = QtCore.pyqtSignal()
+    data_changed = QtCore.pyqtSignal()
+    mode_changed = QtCore.pyqtSignal()
 
-        # TODO connection
-        self.chart.update()
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
-    def setupWindow(self):
-        self.setWindowTitle('Assignment 8')
+        self.__mode = SvmNodeCtrl.SvmMode.Inactive
+        self.__setup_ui()
 
-        central_widget = QtGui.QWidget()
-        self.setCentralWidget(central_widget)
+        self.__data = {}
+
+    def get_mode(self):
+        return self.__mode
+
+    def get_categories(self):
+        categories = []
+
+        for i in range(self.__cat_list.count()):
+            categories.append(self.__cat_list.itemText(i))
+
+        return categories
+
+    def get_category_name(self, index=None):
+        if index is None:
+            return self.__cat_list.currentText()
+
+        return self.__cat_list.itemText(index)
+
+    def get_all_data(self):
+        return self.__data
+
+    def get_data(self):
+        if not self.__data:
+            return []
+
+        return self.__data[self.get_category_name()]
+
+    def set_data(self, data):
+        if len(data) > 0:
+            self.__data[self.get_category_name()].append(data)
+
+        self.__update_training_buttons()
+
+    def __setup_ui(self):
+        layout = QtWidgets.QVBoxLayout()
+
+        mode_group = QtWidgets.QGroupBox("Mode")
+        inactive_button = QtWidgets.QRadioButton("Inactive", mode_group)
+        inactive_button.setChecked(True)
+        training_button = QtWidgets.QRadioButton("Training", mode_group)
+        prediction_button = QtWidgets.QRadioButton("Prediction", mode_group)
+        mode_group_layout = QtWidgets.QVBoxLayout()
+        mode_group_layout.addWidget(inactive_button)
+        mode_group_layout.addWidget(training_button)
+        mode_group_layout.addWidget(prediction_button)
+        mode_group.setLayout(mode_group_layout)
+
+        categories_group = QtWidgets.QGroupBox("Categories")
+        cat_name_edit = QtWidgets.QLineEdit()
+        cat_name_label = QtWidgets.QLabel("New category name")
+        cat_name_label.setBuddy(cat_name_edit)
+        cat_add_button = QtWidgets.QToolButton()
+        cat_add_button.setText("+")
+        cat_name_layout = QtWidgets.QHBoxLayout()
+        cat_name_layout.addWidget(cat_name_edit)
+        cat_name_layout.addWidget(cat_add_button)
+        cat_list = QtWidgets.QComboBox()
+        train_button = QtWidgets.QPushButton("Train")
+        train_button.setEnabled(False)
+        train_button.setCheckable(True)
+        reset_button = QtWidgets.QPushButton("Reset")
+        reset_button.setEnabled(False)
+        delete_button = QtWidgets.QPushButton("Delete")
+        delete_button.setEnabled(False)
+        button_layout = QtWidgets.QHBoxLayout()
+        button_layout.addWidget(reset_button)
+        button_layout.addWidget(delete_button)
+        categories_group_layout = QtWidgets.QVBoxLayout()
+        categories_group_layout.addWidget(cat_name_label)
+        categories_group_layout.addLayout(cat_name_layout)
+        categories_group_layout.addWidget(cat_list)
+        categories_group_layout.addWidget(train_button)
+        categories_group_layout.addLayout(button_layout)
+        categories_group.setLayout(categories_group_layout)
+
+        layout.addWidget(mode_group)
+        layout.addWidget(categories_group)
+
+        self.setLayout(layout)
+        self.__cat_list = cat_list
+        self.__cat_name_edit = cat_name_edit
+        self.__train_button = train_button
+        self.__reset_button = reset_button
+        self.__delete_button = delete_button
+
+        inactive_button.clicked.connect(self.__on_mode_changed)
+        training_button.clicked.connect(self.__on_mode_changed)
+        prediction_button.clicked.connect(self.__on_mode_changed)
+        cat_add_button.clicked.connect(self.__on_add_category)
+        delete_button.clicked.connect(self.__on_delete_category)
+        train_button.clicked.connect(self.__on_train_clicked)
+        reset_button.clicked.connect(self.__clear_data)
+
+    def __on_mode_changed(self):
+        if self.sender().text() == "Inactive":
+            self.__mode = SvmNodeCtrl.SvmMode.Inactive
+
+        if self.sender().text() == "Training":
+            self.__mode = SvmNodeCtrl.SvmMode.Training
+
+        if self.sender().text() == "Prediction":
+            self.__mode = SvmNodeCtrl.SvmMode.Prediction
+
+        self.__update_training_buttons()
+        self.mode_changed.emit()
+
+    def __on_add_category(self):
+        name = self.__cat_name_edit.text()
+        if not name:
+            return
+
+        if self.__cat_list.findText(name, QtCore.Qt.MatchFixedString) >= 0:
+            return
+
+        self.__cat_name_edit.setText("")
+        self.__cat_list.addItem(name)
+        self.__cat_list.setCurrentIndex(self.__cat_list.count() - 1)
+        self.__data[name] = []
+        self.__update_training_buttons()
+
+    def __on_delete_category(self):
+        self.__data.pop(self.get_category_name())
+        self.__cat_list.removeItem(self.__cat_list.currentIndex())
+        self.__update_training_buttons()
+        self.data_changed.emit()
+
+    def __update_training_buttons(self):
+        self.__delete_button.setEnabled(self.__cat_list.count() > 0)
+
+        can_enable_reset_btn = self.__cat_list.count() > 0 \
+                                    and len(self.get_data()) > 0 \
+                                    and self.__mode == SvmNodeCtrl.SvmMode.Training
+        self.__reset_button.setEnabled(can_enable_reset_btn)
+
+        can_enable_training_btn = self.__cat_list.count() > 0 \
+                                    and self.__mode == SvmNodeCtrl.SvmMode.Training
+        self.__train_button.setEnabled(can_enable_training_btn)
+
+    def __on_train_clicked(self, checked):
+        if checked:
+            self.__train_button.setText("Training...")
+            self.training_started.emit()
+        else:
+            self.__train_button.setText("Train")
+            self.data_changed.emit()
+
+    def __clear_data(self):
+        self.__data[self.get_category_name()] = []
+        self.__update_training_buttons()
+
+
+class SvmNode(Node):
+    nodeName = "SVM"
+
+    def __init__(self, name):
+        terminals = { "dspIn": { "io": "in" },
+                      "categoryOut": { "io": "out" } }
+        super().__init__(name, terminals)
+
+        self.__buffer = []
+        self.__classifier = svm.SVC()
+        
+        self.ui = SvmNodeCtrl()
+        self.ui.training_started.connect(self.__clear_buffer)
+        self.ui.data_changed.connect(self.__process_training_data)
+        self.ui.mode_changed.connect(self.__clear_buffer)
+
+    def ctrlWidget(self):
+        return self.ui
+
+    def process(self, **kargs):
+        if self.ui.get_mode() == SvmNodeCtrl.SvmMode.Inactive:
+            return { "categoryOut": "** classifier inactive **" }
+
+        self.__buffer = kargs["dspIn"]
+
+        if self.ui.get_mode() == SvmNodeCtrl.SvmMode.Training:
+            return { "categoryOut": "** training mode **" }
+
+        if len(self.ui.get_categories()) < 2:
+            return { "categoryOut": "** you have to train at least 2 categories **"}
+
+        try:
+            category = self.__classifier.predict([self.__buffer])
+            return { "categoryOut": self.ui.get_category_name(category[0]) }
+        except ValueError:
+            return { "categoryOut": "** need more training data **" }
+
+    def __process_training_data(self):
+        self.ui.set_data(self.__buffer)
+        self.__clear_buffer()
+        self.__train_data()
+
+    def __clear_buffer(self):
+        self.__buffer = []
+
+    def __train_data(self):
+        training_set = []
+        classifiers = []
+
+        categories = self.ui.get_categories()
+        all_data = self.ui.get_all_data()
+
+        for i in range(len(categories)):
+            category_name = self.ui.get_category_name(i)
+            data = all_data[category_name]
+            
+            for d in data:
+                training_set.append(d)
+                classifiers.append(i)
+
+        try:
+            self.__classifier.fit(training_set, classifiers)
+        except ValueError:
+            pass
+
+fclib.registerNodeType(SvmNode, [("Classifier",)])
+
+class TextDisplayNode(Node):
+    nodeName = "TextDisplay"
+
+    def __init__(self, name):
+        terminals = { "textIn": { "io": "in" } }
+        super().__init__(name, terminals)
+
+        self.__text = None
+
+    def get_text(self):
+        return self.__text
+
+    def set_text(self, text):
+        self.__text = text
+
+    def process(self, **kargs):
+        if self.__text is not None:
+            self.__text.setText(kargs["textIn"])
+
+        return {}
+
+fclib.registerNodeType(TextDisplayNode, ("Display",))
+
+class MainWindow(QtWidgets.QMainWindow):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle("Activity Recognizer")
+
+        self.__fc = Flowchart()
+
         layout = QtGui.QGridLayout()
-        central_widget.setLayout(layout)
-        
-        layout.addWidget(self.chart.widget(), 0, 0, 2, 1)
-        
-        self.connect_nodes()
+        layout.addWidget(self.__fc.widget(), 0, 0, 2, 1)
+        text = QtWidgets.QLabel("** predicted category will be shown here**")
+        layout.addWidget(text, 0, 1)
 
+        cw = QtGui.QWidget()
+        cw.setLayout(layout)
+        self.setCentralWidget(cw)
+
+        self.__categoryText = text
+        self.__setup_nodes()
+
+    def __setup_nodes(self):
+        dippid_node = self.__fc.createNode("DIPPID", pos=(0, 0))
+        buf_x = self.__fc.createNode("Buffer", pos=(150, -50))
+        buf_y = self.__fc.createNode("Buffer", pos=(150, 0))
+        buf_z = self.__fc.createNode("Buffer", pos=(150, 50))
+        dsp_node = self.__fc.createNode("Fft", pos=(300, 50))
+        svm_node = self.__fc.createNode("SVM", pos=(450, 0))
+        display = self.__fc.createNode("TextDisplay", pos=(450, -50))
+        display.set_text(self.__categoryText)
+
+        self.__fc.connectTerminals(dippid_node["accelX"], buf_x["dataIn"])
+        self.__fc.connectTerminals(dippid_node["accelY"], buf_y["dataIn"])
+        self.__fc.connectTerminals(dippid_node["accelZ"], buf_z["dataIn"])
+        self.__fc.connectTerminals(buf_x["dataOut"], dsp_node["accelX"])
+        self.__fc.connectTerminals(buf_y["dataOut"], dsp_node["accelY"])
+        self.__fc.connectTerminals(buf_z["dataOut"], dsp_node["accelZ"])
+        self.__fc.connectTerminals(dsp_node["dspOut"], svm_node["dspIn"])
+        self.__fc.connectTerminals(svm_node["categoryOut"], display["textIn"])
+
+        svm_node.ctrlWidget().training_started.connect(lambda: dsp_node.clear())
 
 if __name__ == '__main__':
+    app = QtWidgets.QApplication(sys.argv)
+    app.setQuitOnLastWindowClosed(True)
 
-    if len(sys.argv) < 2:
-        sys.stdout.write("Please specify port")
-
-    port = int(sys.argv[1])
-    print(port)
-
-    app = QtGui.QApplication([])
-    main_win = MainWindow()
-
-    # chart.nodes
-    # chart.disconnectAll()
-    # chart.removeNode()
-
-    main_win.show()
-
-    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
-        sys.exit(QtGui.QApplication.instance().exec_())
+    win = MainWindow()
+    win.show()
 
     sys.exit(app.exec_())
